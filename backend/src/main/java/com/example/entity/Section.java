@@ -21,5 +21,4 @@ public class Section {
     private BigDecimal sortIndex;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-    private Integer valid;
 }

@@ -16,13 +16,12 @@ CREATE TABLE `project`
 CREATE TABLE `section`
 (
     `section_id`    int(10) NOT NULL AUTO_INCREMENT COMMENT '章节ID',
-    `uuid`  varchar(36) NOT NULL COMMENT 'UUID',
+    `uuid`   varchar(36) NOT NULL COMMENT '版本UUID',
     `project_id`    int(10) NOT NULL DEFAULT 0 COMMENT '关联的项目ID',
     `section_title` varchar(256) NOT NULL COMMENT '章节标题',
     `sort_index`    decimal(10,6) NOT NULL COMMENT '排序索引，6位小数，用于表示章节在项目中的排序位置',
     `create_time`   datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time`   datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-    `valid`         tinyint(1) NOT NULL DEFAULT 1 COMMENT '逻辑删除标记：0=无效（已删除），1=有效',
     PRIMARY KEY (`section_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -31,14 +30,13 @@ DROP TABLE IF EXISTS `paragraph`;
 CREATE TABLE `paragraph`
 (
     `paragraph_id`   int(10) NOT NULL AUTO_INCREMENT COMMENT '段落ID',
-    `uuid`  varchar(36) NOT NULL COMMENT 'UUID',
+    `uuid`           varchar(36) NOT NULL COMMENT '版本UUID',
     `content`        text DEFAULT NULL COMMENT '段落内容',
     `paragraph_type` varchar(20) NOT NULL COMMENT '段落类型，如text表示文本段落，image表示图片段落，formula表示公式',
     `file_id`        int(10) DEFAULT NULL COMMENT '关联的文件ID，仅当类型为image时有效',
     `create_time`    datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time`    datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-    PRIMARY KEY (`paragraph_id`) USING BTREE,
-    UNIQUE KEY `uniq_paragraph_uuid` (`uuid`)
+    PRIMARY KEY (`paragraph_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 修改section_paragraph_relation表，增加style_uuid字段用于关联段落格式样式
@@ -70,6 +68,7 @@ CREATE TABLE `content_item_relation`
     `ancestors`      varchar(255) DEFAULT '' COMMENT '祖级列表，存储从顶级内容项到当前内容项的所有上级relation_id，各ID之间用逗号分隔',
     `title`          varchar(256) DEFAULT NULL COMMENT '内容项标题',
     `sort_index`     decimal(10,6) NOT NULL COMMENT '排序索引，6位小数，用于表示内容项的排序位置',
+    `style_uuid`      varchar(36) NOT NULL COMMENT '样式UUID',
     `create_time`    datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time`    datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     `valid`         tinyint(1) NOT NULL DEFAULT 1 COMMENT '逻辑删除标记：0=无效（已删除），1=有效',

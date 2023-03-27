@@ -35,6 +35,9 @@ public class ContentItemRelation {
     @TableField("sort_index")
     private BigDecimal sortIndex;
 
+    @TableField("style_uuid")
+    private String styleUuid;
+
     @TableField("create_time")
     private LocalDateTime createTime;
 
