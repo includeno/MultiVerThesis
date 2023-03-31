@@ -9,6 +9,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,20 +25,22 @@ public class OrganizationAndMemberLogicService {
         // Step 1: 查询 membership 表，获取该用户关联的所有组织ID
         QueryWrapper<Membership> membershipQueryWrapper = new QueryWrapper<>();
         membershipQueryWrapper.eq("user_id", userId);
-        List<Integer> organizationIds = membershipService.list(membershipQueryWrapper)
+        membershipQueryWrapper.eq("valid", 1);
+        List<Membership> memberships = membershipService.list(membershipQueryWrapper);
+
+        List<Integer> organizationIds = memberships
                 .stream()
                 .map(Membership::getOrganizationId)
                 .collect(Collectors.toList());
+        if(organizationIds.isEmpty()) {
+            return new ArrayList<>();
+        }
 
         // Step 2: 根据上一步获取的组织ID列表，查询 organization 表，获取组织的基础信息
         QueryWrapper<Organization> organizationQueryWrapper = new QueryWrapper<>();
         organizationQueryWrapper.in("organization_id", organizationIds);
+        organizationQueryWrapper.eq("valid", 1);
         List<Organization> organizations = organizationService.list(organizationQueryWrapper);
-
-        // Step 3: 使用组织ID列表再次查询 membership 表，获取成员信息
-        QueryWrapper<Membership> membersQueryWrapper = new QueryWrapper<>();
-        membersQueryWrapper.in("organization_id", organizationIds);
-        List<Membership> memberships = membershipService.list(membersQueryWrapper);
 
         // 将成员信息关联到组织信息中
         List<OrganizationInfo> organizationInfos = organizations.stream().map(organization -> {
@@ -49,7 +52,6 @@ public class OrganizationAndMemberLogicService {
             organizationInfo.setMembers(orgMembers);
             return organizationInfo;
         }).collect(Collectors.toList());
-
         return organizationInfos;
     }
 

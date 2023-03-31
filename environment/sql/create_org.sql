@@ -55,7 +55,7 @@ CREATE TABLE `membership`
     `organization_id` INT(10) UNSIGNED NOT NULL COMMENT '工作区ID',
     `member_type`     varchar(20)      NOT NULL COMMENT '成员类型',
     `unconfirmed`     tinyint(1)       NOT NULL DEFAULT 0 COMMENT '是否未确认：0=否，1=是',
-    `deactivated`     tinyint(1)       NOT NULL DEFAULT 0 COMMENT '是否已停用：0=否，1=是',
+    `valid`           tinyint(1)       NOT NULL DEFAULT 1 COMMENT '逻辑删除标记：0=无效（已删除），1=有效',
     `org_member_type` varchar(20)               DEFAULT NULL COMMENT '工作区内成员类型',
     PRIMARY KEY (`member_id`) USING BTREE
 ) ENGINE = InnoDB
@@ -72,7 +72,7 @@ CREATE TABLE `organization_project_relation`
     `create_time`     DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time`     DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`relation_id`),
-    UNIQUE KEY `org_project_unique` (`organization_id`, `project_id`)             -- 工作区ID和项目ID的唯一性约束
+    UNIQUE KEY `org_project_unique` (`organization_id`, `project_id`) -- 工作区ID和项目ID的唯一性约束
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='工作区与项目关系表';
 

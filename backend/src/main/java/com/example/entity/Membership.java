@@ -15,6 +15,6 @@ public class Membership {
     private Integer organizationId;
     private String memberType;
     private Boolean unconfirmed;
-    private Boolean deactivated;
+    private Boolean valid;
     private String orgMemberType;
 }

@@ -14,10 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -51,17 +48,38 @@ public class ProjectLogicService {
     private OrganizationProjectRelationService organizationProjectRelationService;
 
     // 添加项目
-    public boolean addProject(Project project) {
-        return projectService.save(project);
+    public boolean addProject(String projectName, Integer userId, Integer organizationId) {
+        Project project = new Project();
+        project.setProjectName(projectName);
+        project.setUuid(UUID.randomUUID().toString());
+        project.setValid(1); // 逻辑删除标记设置为1（未删除）
+        boolean saveProject = projectService.save(project);
+
+        OrganizationProjectRelation organizationProjectRelation = new OrganizationProjectRelation();
+        organizationProjectRelation.setOrganizationId(organizationId);
+        organizationProjectRelation.setProjectId(project.getProjectId());
+        organizationProjectRelation.setCreateBy(userId);
+        boolean saveOrganizationProjectRelation = organizationProjectRelationService.save(organizationProjectRelation);
+        return saveProject && saveOrganizationProjectRelation;
     }
 
     // 修改项目
-    public boolean updateProject(Integer projectId, String projectName) {
+    public boolean updateProject(Integer projectId, String projectName, Integer valid) {
         // 创建更新条件
         UpdateWrapper<Project> updateWrapper = new UpdateWrapper<>();
+        int count = 0;
+        if (projectName != null) {
+            updateWrapper.set("project_name", projectName);
+            count++;
+        }
+        if (valid != null) {
+            updateWrapper.set("valid", valid);
+            count++;
+        }
+        if (count == 0) {
+            return true;
+        }
         updateWrapper.eq("project_id", projectId);
-        updateWrapper.set("project_name", projectName);
-
         // 使用Mybatis-plus Service进行部分字段的更新
         return projectService.update(updateWrapper);
     }
@@ -145,23 +163,23 @@ public class ProjectLogicService {
         List<ContentItemRelation> conentItems = contentItemRelationService.list(contentItemRelationQueryWrapper);
         //parent
         Map<Integer, ContentItemRelation> parentContentItemRelationMap = conentItems.stream().filter(contentItemRelation -> contentItemRelation.getParentId() == null).collect(Collectors.toMap(
-                contentItemRelation -> contentItemRelation.getRelationId(),
+                ContentItemRelation::getRelationId,
                 contentItemRelation -> contentItemRelation
         ));
 
         //Map
         Map<Integer, ContentItemRelation> contentItemRelationMap = conentItems.stream().collect(Collectors.toMap(
-                contentItemRelation -> contentItemRelation.getRelationId(),
+                ContentItemRelation::getRelationId,
                 contentItemRelation -> contentItemRelation
         ));
         Map<String, ContentItemRelation> uuidContentItemRelationMap = conentItems.stream().collect(Collectors.toMap(
-                contentItemRelation -> contentItemRelation.getUuid(),
+                ContentItemRelation::getUuid,
                 contentItemRelation -> contentItemRelation
         ));
 
         // 创建章节映射关系
         Map<String, Element> sectionMap = sections.stream().collect(Collectors.toMap(
-                section -> section.getUuid(),
+                Section::getUuid,
                 section -> Element.createSection(section.getUuid(), section.getTitle(), "section", section.getContentType(),
                         section.getContent(), uuidContentItemRelationMap.get(section.getUuid()).getSortIndex(), new ArrayList<>())
         ));
@@ -169,7 +187,7 @@ public class ProjectLogicService {
 
         // 创建段落映射关系
         Map<String, Element> paragraphMap = paragraphs.stream().collect(Collectors.toMap(
-                paragraph -> paragraph.getUuid(),
+                Paragraph::getUuid,
                 paragraph -> Element.createParagraph(paragraph.getUuid(), paragraph.getTitle(), "paragraph", paragraph.getContentType(),
                         paragraph.getContent(), uuidContentItemRelationMap.get(paragraph.getUuid()).getSortIndex(), null))
         );
@@ -221,13 +239,16 @@ public class ProjectLogicService {
         projectMetaData.setUuid(project.getUuid());
 
         QueryWrapper<Version> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("project_id", project.getUuid());
+        queryWrapper.eq("project_id", project.getProjectId());
         List<Version> versions = versionService.list(queryWrapper);
         log.info("versions: {}", versions);
-
-        List<Element> elements = getProjectDetailByVersions(versions);
-        log.info("elements: {}", elements);
-        projectMetaData.setElements(elements);
+        if (versions == null || versions.isEmpty()) {
+            projectMetaData.setElements(new ArrayList<>());
+        } else {
+            List<Element> elements = getProjectDetailByVersions(versions);
+            log.info("elements: {}", elements);
+            projectMetaData.setElements(elements);
+        }
         return projectMetaData;
     }
 }

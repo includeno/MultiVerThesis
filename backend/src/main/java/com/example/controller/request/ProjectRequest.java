@@ -8,6 +8,6 @@ import javax.validation.constraints.NotNull;
 public class ProjectRequest {
     @NotNull
     private Integer projectId;
-    @NotNull
     private String projectName;
+    private Integer valid;
 }
