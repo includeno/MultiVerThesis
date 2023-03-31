@@ -17,33 +17,14 @@ public class ContentItemRelation {
     @TableId(value = "relation_id", type = IdType.AUTO)
     private Integer relationId;
 
-    @TableField("content_type")
     private String contentType;
-
-    @TableField("content_id")
-    private Integer contentId;
-
-    @TableField("parent_id")
+    private String uuid;
     private Integer parentId;
-
-    @TableField("ancestors")
     private String ancestors;
-
-    @TableField("title")
     private String title;
-
-    @TableField("sort_index")
     private BigDecimal sortIndex;
-
-    @TableField("style_uuid")
     private String styleUuid;
-
-    @TableField("create_time")
     private LocalDateTime createTime;
-
-    @TableField("update_time")
     private LocalDateTime updateTime;
-
-    @TableField("valid")
-    private Boolean valid;
+    private Integer valid;
 }

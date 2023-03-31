@@ -4,21 +4,17 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
-@TableName("paragraph")
-public class Paragraph {
-    @TableId(value = "paragraph_id", type = IdType.AUTO)
-    private Integer paragraphId;
+@TableName("organization")
+public class Organization {
+    @TableId(type = IdType.AUTO)
+    private Integer organizationId;
     private String uuid;
-    private String title;
-    private String content;
-    private String contentType;
-    private Integer fileId;
+    private String name;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
+    private Boolean valid;
 }

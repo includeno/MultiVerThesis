@@ -1,27 +1,23 @@
 package com.example.enums;
 
 public enum ContentType {
-    SECTION("section"),
-    PARAGRAPH("paragraph");
+    // 文本段落
+    TEXT("text"),
+    // 图片段落
+    IMAGE("image"),
+    // 公式段落
+    FORMULA("formula");
 
-    private final String value;
+    // 段落类型的字符串表示
+    private final String type;
 
-    ContentType(String value) {
-        this.value = value;
+    // 构造函数，初始化段落类型的字符串表示
+    ContentType(String type) {
+        this.type = type;
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    // 通过值获取对应的枚举实例
-    public static ContentType fromValue(String value) {
-        for (ContentType type : ContentType.values()) {
-            if (type.getValue().equals(value)) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Invalid content type value: " + value);
+    // 获取段落类型的字符串表示
+    public String getType() {
+        return type;
     }
 }
-

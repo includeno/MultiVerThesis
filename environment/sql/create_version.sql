@@ -4,6 +4,7 @@ CREATE TABLE `version`
 (
     `version_id`     int(10) NOT NULL AUTO_INCREMENT COMMENT '版本ID',
     `version_uuid`   varchar(36) NOT NULL COMMENT '版本UUID',
+    `project_id`    int(10) NOT NULL DEFAULT 0 COMMENT '关联的项目ID',
     `version_number` int(10) NOT NULL DEFAULT 1 COMMENT '版本号（数字），默认1，每次修改加1',
     `version_type`   varchar(20) NOT NULL COMMENT '版本类型，如段落paragraph、章节section等',
     `timestamp`    datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '版本修改时间',

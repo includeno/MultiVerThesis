@@ -16,9 +16,9 @@ public class Section {
     @TableId(value = "section_id", type = IdType.AUTO)
     private Integer sectionId;
     private String uuid;
-    private Integer projectId;
-    private String sectionTitle;
-    private BigDecimal sortIndex;
+    private String title;
+    private String content;
+    private String contentType;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }
